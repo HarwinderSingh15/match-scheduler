@@ -1,12 +1,17 @@
 import {MATCHES} from '../types';
 import {createSlice} from '@reduxjs/toolkit';
-import {login} from '../actions/authActions';
-import {getMatchesList} from '../actions/MatchesActions';
+import {
+  ViewMatchDetails,
+  addMatch,
+  getMatchesList,
+} from '../actions/MatchesActions';
 
 const initialState = {
   loading: false,
   allMatches: {},
   error: {},
+  allSchedules: [],
+  viewSingleSchedule: {},
 };
 
 const matchesSlice = createSlice({
@@ -25,6 +30,14 @@ const matchesSlice = createSlice({
       .addCase(getMatchesList.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      })
+
+      .addCase(addMatch.fulfilled, (s, a) => {
+        s.allSchedules = [...s.allSchedules, a.payload];
+      })
+
+      .addCase(ViewMatchDetails.fulfilled, (s, a) => {
+        s.viewSingleSchedule = a.payload;
       });
   },
 });
