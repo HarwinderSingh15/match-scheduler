@@ -20,7 +20,6 @@ export function Profile() {
       <Text style={[TextStyles.title, styles.title, {color: colors.text}]}>
         {strings.profile.message}
       </Text>
-      {/* <Button title={strings.profile.logout} onPress={logoutUser} /> */}
     </View>
   );
 }

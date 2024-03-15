@@ -11,6 +11,39 @@ export class MatchesController {
     }
   }
 
+  static async getAllMatchSchedule() {
+    try {
+      const resp = await getStorage();
+      const deserializeMatchs = deserializeStorage(
+        resp,
+        'matches', // reducer name
+      );
+      return deserializeMatchs?.allSchedules || [];
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  static async addMatchSchedule(body) {
+    try {
+      const resp = await getStorage();
+      const deserializeMatchs = deserializeStorage(
+        resp,
+        'matches', // reducer name
+      );
+      const newSchedules = [...(deserializeMatchs?.allSchedules || []), body];
+      const parsedStorage = JSON.parse(resp);
+      parsedStorage['matches'] = serializeStorage({
+        ...deserializeMatchs,
+        allSchedules: newSchedules,
+      });
+      setStorage(serializeStorage(parsedStorage));
+      return body;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   static async viewMatchDetailsById(id) {
     try {
       const resp = await getStorage();
@@ -23,6 +56,7 @@ export class MatchesController {
       throw error;
     }
   }
+
   static async editMatchScheduleById({id, ...rest}) {
     try {
       const resp = await getStorage();
@@ -41,6 +75,27 @@ export class MatchesController {
           ...deserializeMatchs?.allSchedules?.filter(el => el.id != id),
           updateSchedule,
         ],
+      });
+      setStorage(serializeStorage(parsedStorage));
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  static async deleteScheduleById(id) {
+    try {
+      const resp = await getStorage();
+      const deserializeMatchs = deserializeStorage(
+        resp,
+        'matches', // reducer name
+      );
+      const removedSchedule = deserializeMatchs?.allSchedules?.filter(
+        el => el.id != id,
+      );
+      const parsedStorage = JSON.parse(resp);
+      parsedStorage['matches'] = serializeStorage({
+        ...deserializeMatchs,
+        allSchedules: removedSchedule,
       });
       setStorage(serializeStorage(parsedStorage));
     } catch (error) {

@@ -1,35 +1,37 @@
 import React, {useState} from 'react';
-import {View, Text, TouchableOpacity} from 'react-native';
+import {View, Text, TouchableOpacity, Alert} from 'react-native';
 import {Calendar} from 'react-native-calendars';
 import {useNavigation} from '@react-navigation/native';
 import dayjs from 'dayjs';
+import {navigate} from '@/navigation/navigationRef';
+import { NAVIGATION } from '@/constants/navigation';
 
 const MatchScheduler = () => {
   const [selectedDates, setSelectedDates] = useState({});
   const [selectedDate, setSelectedDate] = useState(null);
   const [timeSlots, setTimeSlots] = useState({});
-
   const navigation = useNavigation();
 
-  // Function to handle date selection
   const handleDateSelect = date => {
     setSelectedDate(date.dateString);
   };
 
-  // Function to add time slot for selected date
   const addTimeSlot = (startTime, endTime) => {
-    if (!timeSlots[selectedDate]) {
-      setTimeSlots({...timeSlots, [selectedDate]: []});
+    if (!selectedDate) {
+      Alert.alert('Select Date', 'Please select a date first.');
+      return;
     }
     setTimeSlots(prev => ({startTime, endTime, selectedDate}));
   };
 
-  // Function to handle navigation to MatchDetailsScreen
   const goToMatchDetails = () => {
-    navigation.navigate('MatchDetails', {selectedDate, timeSlots});
+    if (Object.keys(timeSlots).length === 0) {
+      Alert.alert('Select Time Slots', 'Please select at least one time slot.');
+      return;
+    }
+    navigate(NAVIGATION.matchDetails, {selectedDate, timeSlots});
   };
 
-  // Function to handle adding all days
   const handleAddAllDays = () => {
     const allDates = Object.keys(selectedDates).reduce((acc, date) => {
       acc[date] = {selected: true};
@@ -37,11 +39,13 @@ const MatchScheduler = () => {
     }, {});
     setSelectedDates(allDates);
   };
+
   const renderTimeSlots = () => {
-    if (selectedDate && timeSlots['selectedDate']) {
+    if (selectedDate && timeSlots[selectedDate]) {
+      const {startTime, endTime} = timeSlots[selectedDate];
       return (
         <Text>
-          {timeSlots.startTime} - {timeSlots.endTime}
+          {startTime} - {endTime}
         </Text>
       );
     }
@@ -51,29 +55,58 @@ const MatchScheduler = () => {
   return (
     <View style={{flex: 1, padding: 20}}>
       <Text style={{fontSize: 20, marginBottom: 10}}>Match Scheduler</Text>
-      <TouchableOpacity onPress={handleAddAllDays}>
-        <Text style={{fontSize: 16, marginBottom: 10}}>Select All Days</Text>
-      </TouchableOpacity>
+      {/* <TouchableOpacity onPress={handleAddAllDays}>
+        <Text style={{fontSize: 16, marginBottom: 10, color: 'blue'}}>
+          Select All Days
+        </Text>
+      </TouchableOpacity> */}
       <Text style={{fontSize: 16, marginBottom: 10}}>
         Select Dates for Match Scheduling:
       </Text>
-      <Calendar onDayPress={handleDateSelect} markedDates={selectedDates} />
+      <Calendar
+        minDate={new Date()}
+        onDayPress={handleDateSelect}
+        markedDates={{
+          [selectedDate]: {selected: true, selectedColor: 'orange'},
+        }}
+      />
       {selectedDate && (
         <View style={{marginTop: 20}}>
           <Text style={{fontSize: 16}}>Selected Date: {selectedDate}</Text>
           <Text style={{fontSize: 16, marginTop: 10}}>Add Time Slot:</Text>
           <TouchableOpacity onPress={() => addTimeSlot('09:00', '11:00')}>
-            <Text style={{fontSize: 14, marginTop: 5}}>9:00 AM - 11:00 AM</Text>
+            <Text
+              style={{
+                fontSize: 14,
+                marginTop: 5,
+                color: selectedDate ? 'blue' : 'grey',
+              }}>
+              9:00 AM - 11:00 AM
+            </Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => addTimeSlot('13:00', '15:00')}>
-            <Text style={{fontSize: 14, marginTop: 5}}>1:00 PM - 3:00 PM</Text>
+            <Text
+              style={{
+                fontSize: 14,
+                marginTop: 5,
+                color: selectedDate ? 'blue' : 'grey',
+              }}>
+              1:00 PM - 3:00 PM
+            </Text>
           </TouchableOpacity>
 
           <Text>Added Time slots</Text>
           {renderTimeSlots()}
           {/* Add more time slot options as needed */}
-          <TouchableOpacity onPress={goToMatchDetails}>
-            <Text style={{fontSize: 16, color: 'blue', marginTop: 20}}>
+          <TouchableOpacity
+            onPress={goToMatchDetails}
+            disabled={Object.keys(timeSlots).length === 0}>
+            <Text
+              style={{
+                fontSize: 16,
+                color: Object.keys(timeSlots).length === 0 ? 'grey' : 'blue',
+                marginTop: 20,
+              }}>
               Proceed to Match Details
             </Text>
           </TouchableOpacity>

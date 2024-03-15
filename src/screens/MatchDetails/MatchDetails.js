@@ -1,4 +1,5 @@
 import {NAVIGATION} from '@/constants/navigation';
+import {navigate} from '@/navigation/navigationRef';
 import {
   ViewMatchDetails,
   addMatch,
@@ -15,14 +16,14 @@ import {
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 
-const MatchDetailsScreen = ({navigation, route}) => {
+const MatchDetailsScreen = ({route}) => {
   const {timeSlots, id} = route.params;
 
   const dispatch = useDispatch();
 
   const details = useSelector(s => s?.matches?.viewSingleSchedule);
 
-  const {name, location, participants} = details || {};
+  const {name, location, participants} = id ? details : {};
 
   const [matchDetails, setMatchDetails] = useState({
     participants: participants || [],
@@ -30,7 +31,7 @@ const MatchDetailsScreen = ({navigation, route}) => {
     name: name || '',
   });
 
-  console.log(matchDetails)
+  console.log(timeSlots)
 
   const dummyParticipants = [
     'Player 1',
@@ -57,57 +58,64 @@ const MatchDetailsScreen = ({navigation, route}) => {
     'Player 22',
   ];
 
-  // Function to handle saving match details
   const saveMatchDetails = () => {
-    if (matchDetails?.participants?.length === 0) {
-      alert('Select players ');
+    if (
+      !matchDetails.name ||
+      !matchDetails.location ||
+      matchDetails.participants.length === 0
+    ) {
+      alert('Please fill in all fields');
       return;
-    } else if (matchDetails?.participants?.length < 11) {
-      alert('You have to selected 11 players');
+    } else if (matchDetails.participants.length < 11) {
+      alert('You have to select 11 players');
       return;
     }
-    // Include selectedDates and timeSlots in the matchDetails object
+
     const updatedMatchDetails = {
       ...matchDetails,
       id: generateRandomId(),
       timeSlots: timeSlots,
     };
+
     if (id) {
       updatedMatchDetails.id = id;
       dispatch(editMatchSchedule(updatedMatchDetails));
     } else {
       dispatch(addMatch(updatedMatchDetails));
     }
-    navigation.navigate(NAVIGATION.home);
+
+    setMatchDetails({
+      participants: [],
+      location: '',
+      name: '',
+    });
+
+    navigate(NAVIGATION.home);
   };
 
-  // Function to handle participant selection
   const toggleParticipantSelection = participant => {
     const index = matchDetails?.participants?.findIndex(p => p === participant);
 
     if (index !== -1) {
-      // If participant is already selected, remove it
       const updatedParticipants = [...(matchDetails?.participants || [])];
       updatedParticipants?.splice(index, 1);
       setMatchDetails(prev => ({...prev, participants: updatedParticipants}));
     } else {
-      // If participant is not selected and maximum limit is not reached, add it
       if (matchDetails?.participants?.length < 11) {
         setMatchDetails(prev => ({
           ...prev,
           participants: [...matchDetails?.participants, participant],
         }));
       } else {
-        // If maximum limit is reached, show an alert or any other notification
         alert('Maximum 11 players can be selected.');
       }
     }
   };
-
   useEffect(() => {
     if (id) {
       setMatchDetails(prev => ({...prev, participants}));
-      dispatch(ViewMatchDetails(id))};
+      dispatch(ViewMatchDetails(id));
+    }
   }, [id]);
 
   return (
@@ -118,6 +126,12 @@ const MatchDetailsScreen = ({navigation, route}) => {
         style={{borderColor: '#000', borderWidth: 1}}
         value={matchDetails.name}
         onChangeText={t => setMatchDetails(prev => ({...prev, name: t}))}
+      />
+      <Text>Location</Text>
+      <TextInput
+        style={{borderColor: '#000', borderWidth: 1}}
+        value={matchDetails.location}
+        onChangeText={t => setMatchDetails(prev => ({...prev, location: t}))}
       />
       <Text style={{fontSize: 16}}>Select Participants:</Text>
       <View style={{flexDirection: 'row', flexWrap: 'wrap'}}>

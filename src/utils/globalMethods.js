@@ -11,7 +11,7 @@ export const generateRandomId = (length = 8) => {
 
 export const deserializeStorage = (storage, storageKey) => {
   const response = JSON.parse(storage);
-  return JSON.parse(response[storageKey]);
+  return response?.[storageKey] ? JSON.parse(response[storageKey]) : {};
 };
 export const serializeStorage = storage => {
   return JSON.stringify(storage);

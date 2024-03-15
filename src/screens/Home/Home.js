@@ -1,14 +1,25 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 
 import {FlatList, Text, TouchableOpacity, View} from 'react-native';
 import {styles} from '@/screens/Home/Home.styles';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {Button} from '@/components';
 import {NAVIGATION} from '@/constants/navigation';
+import {getSchedulesList} from '@/redux/actions/MatchesActions';
+import {useIsFocused} from '@react-navigation/native';
 
 export function Home({navigation}) {
+  const dispatch = useDispatch();
   const {allSchedules} = useSelector(state => state?.matches);
 
+  const isFocused = useIsFocused();
+
+  useEffect(() => {
+    dispatch(getSchedulesList());
+  }, [isFocused]);
+
+
+  console.log(allSchedules)
   return (
     <View style={styles.container}>
       <Button

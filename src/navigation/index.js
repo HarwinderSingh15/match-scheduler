@@ -4,14 +4,15 @@ import {useColorScheme} from 'react-native';
 import {useSelector} from 'react-redux';
 import {AuthNavigator} from './AuthNavigator';
 import {theme} from '@/theme';
-import { HomeNavigator } from './HomeNavigator';
+import {HomeNavigator} from './HomeNavigator';
+import {navigationRef} from './navigationRef';
 
 export function RootNavigator() {
   const user = useSelector(s => s.auth.user);
   const scheme = useColorScheme();
 
   return (
-    <NavigationContainer theme={theme[scheme]}>
+    <NavigationContainer ref={navigationRef} theme={theme[scheme]}>
       {user ? <HomeNavigator /> : <AuthNavigator />}
     </NavigationContainer>
   );

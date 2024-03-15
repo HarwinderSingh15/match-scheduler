@@ -16,7 +16,6 @@ export function Login() {
   const [password, setPassword] = useState('');
 
   const handleSubmit = () => {
-    // dispatch(userLogin(username, password));
     const params = {
       username,
       password,

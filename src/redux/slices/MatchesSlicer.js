@@ -3,13 +3,13 @@ import {createSlice} from '@reduxjs/toolkit';
 import {
   ViewMatchDetails,
   addMatch,
-  getMatchesList,
+  getSchedulesList,
 } from '../actions/MatchesActions';
 
 const initialState = {
   loading: false,
-  allMatches: {},
   error: {},
+  addSchedules: {},
   allSchedules: [],
   viewSingleSchedule: {},
 };
@@ -20,20 +20,20 @@ const matchesSlice = createSlice({
   reducers: {},
   extraReducers: builder => {
     builder
-      .addCase(getMatchesList.pending, state => {
+      .addCase(getSchedulesList.pending, state => {
         state.loading = true;
       })
-      .addCase(getMatchesList.fulfilled, (state, action) => {
+      .addCase(getSchedulesList.fulfilled, (state, action) => {
         state.loading = false;
-        state.allMatches = action.payload;
+        state.allSchedules = action.payload;
       })
-      .addCase(getMatchesList.rejected, (state, action) => {
+      .addCase(getSchedulesList.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
 
       .addCase(addMatch.fulfilled, (s, a) => {
-        s.allSchedules = [...s.allSchedules, a.payload];
+        s.addSchedules = {...a.payload};
       })
 
       .addCase(ViewMatchDetails.fulfilled, (s, a) => {

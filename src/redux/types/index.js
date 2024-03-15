@@ -14,3 +14,4 @@ export const MATCHES_LIST = 'matches/list';
 export const MATCHES_ADD = 'matches/add';
 export const MATCHES_VIEW = 'matches/view';
 export const MATCHES_EDIT = 'matches/edit';
+export const MATCHES_DELETE = 'matches/delete';
