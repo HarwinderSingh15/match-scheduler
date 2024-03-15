@@ -41,8 +41,8 @@ const MatchScheduler = () => {
   };
 
   const renderTimeSlots = () => {
-    if (selectedDate && timeSlots[selectedDate]) {
-      const {startTime, endTime} = timeSlots[selectedDate];
+    if (timeSlots && timeSlots?.startTime) {
+      const {startTime, endTime} = timeSlots;
       return (
         <Text>
           {startTime} - {endTime}

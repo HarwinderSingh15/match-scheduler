@@ -23,14 +23,19 @@ export function Home({navigation}) {
   return (
     <View style={styles.container}>
       <Button
-        title="Create"
+        title="Create Schedule"
         onPress={() => {
           navigation.navigate(NAVIGATION.calendar);
         }}
       />
+
+      <Text>All Schedules</Text>
       <FlatList
         keyExtractor={item => item?.id?.toString()}
         data={allSchedules || []}
+        ListEmptyComponent={<View>
+          <Text>No Schedule created</Text>
+        </View>}
         renderItem={({item}) => (
           <TouchableOpacity
             onPress={() =>
